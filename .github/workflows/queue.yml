@@ -1,0 +1,21 @@
+name: Synthetic queue acceptance
+on:
+  pull_request:
+  merge_group:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: synthetic-queue-ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Check synthetic arithmetic
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          example = json.loads(Path("queue-example.json").read_text())
+          assert example == {"values": [2, 3], "expected": 5}
+          assert sum(example["values"]) == example["expected"]
+          PY
